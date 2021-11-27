@@ -1,20 +1,14 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from rest_framework import serializers, exceptions
 
-#django 自带user
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('url', 'username', 'email')
-        
-        
-        
-class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
+        fields = ('username', 'email')
 
 
-class SignupSerializer(serializers.Serializer):
+class SignupSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=20, min_length=6)
     password = serializers.CharField(max_length=20, min_length=6)
     email = serializers.EmailField()
@@ -23,18 +17,16 @@ class SignupSerializer(serializers.Serializer):
         model = User
         fields = ('username', 'email', 'password')
 
-    #will be called is_valid
     def validate(self, data):
-        if User.objects.filter(username = data['username'].lower()).exists():
+        # TODO<HOMEWORK> 增加验证 username 是不是只由给定的字符集合构成
+        if User.objects.filter(username=data['username'].lower()).exists():
             raise exceptions.ValidationError({
-                'message' : 'This username has been occupied.'
+                'message': 'This email address has been occupied.'
             })
-
-        if User.objects.filter(username = data['email'].lower()).exists():
+        if User.objects.filter(email=data['email'].lower()).exists():
             raise exceptions.ValidationError({
-                'message' : 'This email has been occupied.'
+                'message': 'This email address has been occupied.'
             })
-
         return data
 
     def create(self, validated_data):
@@ -43,10 +35,13 @@ class SignupSerializer(serializers.Serializer):
         password = validated_data['password']
 
         user = User.objects.create_user(
-            username = username,
-            email = email,
-            password = password,
+            username=username,
+            email=email,
+            password=password,
         )
         return user
 
 
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
