@@ -8,6 +8,14 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username', 'email')
 
 
+#serializer - 两个作用
+#渲染用户object to json
+#valiadation input info
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+#seriaizer. save()可以创建用户
 class SignupSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=20, min_length=6)
     password = serializers.CharField(max_length=20, min_length=6)
@@ -16,12 +24,14 @@ class SignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email', 'password')
-
+    #will be called when is_valid is called
     def validate(self, data):
-        # TODO<HOMEWORK> 增加验证 username 是不是只由给定的字符集合构成
+        #忽视大小写的match -- 但是这个效率低
+        #User.objects.filter(username__iexact = data['username']).exist()
+        #所以存的时候就要小写
         if User.objects.filter(username=data['username'].lower()).exists():
             raise exceptions.ValidationError({
-                'message': 'This email address has been occupied.'
+                'message': 'This username has been occupied.'
             })
         if User.objects.filter(email=data['email'].lower()).exists():
             raise exceptions.ValidationError({
@@ -30,10 +40,12 @@ class SignupSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        #存储的时候都是小写
         username = validated_data['username'].lower()
         email = validated_data['email'].lower()
         password = validated_data['password']
 
+        # encrypted password, email and password normalize
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -41,7 +53,3 @@ class SignupSerializer(serializers.ModelSerializer):
         )
         return user
 
-
-class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
