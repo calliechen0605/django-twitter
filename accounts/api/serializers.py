@@ -15,6 +15,13 @@ class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
 
+    def validate(self, data):
+        if not User.objects.filter(username=data['username'].lower()).exists():
+            raise exceptions.ValidationError({
+                'username': 'user doesnt exist.'
+            })
+        return data
+
 #seriaizer. save()可以创建用户
 class SignupSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=20, min_length=6)
@@ -31,11 +38,11 @@ class SignupSerializer(serializers.ModelSerializer):
         #所以存的时候就要小写
         if User.objects.filter(username=data['username'].lower()).exists():
             raise exceptions.ValidationError({
-                'message': 'This username has been occupied.'
+                'username': 'This username has been occupied.'
             })
         if User.objects.filter(email=data['email'].lower()).exists():
             raise exceptions.ValidationError({
-                'message': 'This email address has been occupied.'
+                'email': 'This email address has been occupied.'
             })
         return data
 

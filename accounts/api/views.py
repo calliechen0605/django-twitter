@@ -61,11 +61,7 @@ class AccountViewSet(viewsets.ViewSet):
 
         #if user doesnt exist
         #queryset.query打印结果可以看
-        if not User.objects.filter(username=username).exists():
-            return Response({
-                "success": False,
-                "message": "user doesnt exist",
-            }, status=400)
+
 
         # user for login (after authentication)
         user = django_authenticate(username=username, password=password)
