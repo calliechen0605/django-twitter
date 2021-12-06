@@ -2,13 +2,13 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 
-
+#记得打 /, 不然会有301 status code
 LOGIN_URL = '/api/accounts/login/'
 LOGOUT_URL = '/api/accounts/logout/'
 SIGNUP_URL = '/api/accounts/signup/'
 LOGIN_STATUS_URL = '/api/accounts/login_status/'
 
-
+#继承了TestCase, 找所有的以test开头的method; test_
 class AccountApiTests(TestCase):
 
     def setUp(self):
@@ -25,13 +25,17 @@ class AccountApiTests(TestCase):
         # 因为 password 需要被加密, username 和 email 需要进行一些 normalize 处理
         return User.objects.create_user(username, email, password)
 
+    #一个单元测试
     def test_login(self):
         # 每个测试函数必须以 test_ 开头，才会被自动调用进行测试
+
         # 测试必须用 post 而不是 get
+        #get不允许， 所以返回405
         response = self.client.get(LOGIN_URL, {
             'username': self.user.username,
             'password': 'correct password',
         })
+        #get 会在url变成： /api/accounts/login/?username = xxx&password=xxx
         # 登陆失败，http status code 返回 405 = METHOD_NOT_ALLOWED
         self.assertEqual(response.status_code, 405)
 
@@ -51,6 +55,7 @@ class AccountApiTests(TestCase):
             'password': 'correct password',
         })
         self.assertEqual(response.status_code, 200)
+        #response.data --JSON Dictionary
         self.assertNotEqual(response.data['user'], None)
         self.assertEqual(response.data['user']['email'], 'admin@jiuzhang.com')
         # 验证已经登录了
