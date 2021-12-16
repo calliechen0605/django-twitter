@@ -8,6 +8,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username', 'email')
 
 
+class UserSerializerForTweet(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id','username')
+
+
 #serializer - 两个作用
 #渲染用户object to json
 #valiadation input info

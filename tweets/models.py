@@ -18,6 +18,11 @@ class Tweet(models.Model):
     #每次修改都会更新时间
     #updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        index_together = (('user', 'created_at'),)
+        #-created_at, negative sign, ascending 
+        ordering = ('user', '-created_at')
+
     @property
     def hours_to_now(self):
         #datetime.now不带时区信息， utc有
