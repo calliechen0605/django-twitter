@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     #startapp 创建的都要加进去
     'tweets',
+    'friendships',
 ]
 
 REST_FRAMEWORK = {
