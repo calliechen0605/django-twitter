@@ -14,6 +14,10 @@ class UserSerializerForTweet(serializers.ModelSerializer):
         fields = ('id','username')
 
 
+class UserSerializerForFriendship(UserSerializerForTweet):
+    pass
+
+
 #serializer - 两个作用
 #渲染用户object to json
 #valiadation input info
