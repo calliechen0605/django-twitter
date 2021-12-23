@@ -25,8 +25,7 @@ class AccountViewSet(viewsets.ViewSet):
     serializer_class = UserSerializer
     #主资源下的次目录叫action, /api/accounts/login_status --> 这里login_status 就是action
     #detail: url不需要写ID， 不是某个object, (整体目录false,specific  id  true)
-    @action(methods=['GET'], detail=False)
-    def login_status(self, request):
+
         data = {'has_logged_in': request.user.is_authenticated}
         if request.user.is_authenticated:
             #data 加入user信息, return login status + user info
