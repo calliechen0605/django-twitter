@@ -17,6 +17,9 @@ class UserSerializerForTweet(serializers.ModelSerializer):
 class UserSerializerForFriendship(UserSerializerForTweet):
     pass
 
+class UserSerializerForNewsFeed(UserSerializerForTweet):
+    pass
+
 
 #serializer - 两个作用
 #渲染用户object to json
