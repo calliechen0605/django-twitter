@@ -6,6 +6,7 @@ from tweets.models import Tweet
 
 class NewsFeed(models.Model):
     # 注意这个 user 不是存储谁发了这条 tweet，而是谁可以看到这条 tweet
+    #foreign key要set  on_delete 防止cascade
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     tweet = models.ForeignKey(Tweet, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

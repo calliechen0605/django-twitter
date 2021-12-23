@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from tweets.api.serializers import TweetSerializer, TweetSerializerForCreate
 from tweets.models import Tweet
+from newsfeeds.services import NewsFeedService
 
 #model view set 尽量不要用，model view set支持增删查改， 但很多时候 接口需要有限制
 '''
@@ -43,7 +44,8 @@ class TweetViewSet(viewsets.GenericViewSet):
             }, status=400)
         #save will triger create method in TweetSerializierForCreate
         tweet = serializer.save()
-        #
+        #view简单的事情， 复杂逻辑换去别的地方
+        NewsFeedService.fanout_to_followers(tweet)
         return Response(TweetSerializer(tweet).data, status=201)
 
 
