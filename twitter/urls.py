@@ -20,7 +20,11 @@ from rest_framework import routers
 from accounts.api.views import UserViewSet, AccountViewSet
 from tweets.api.views import TweetViewSet
 from friendships.api.views import FriendshipViewSet
+<<<<<<< Updated upstream
 from newsfeeds.api.views import NewsFeedViewSet
+=======
+from newsfeeds.api.views import News
+>>>>>>> Stashed changes
 
 
 
@@ -29,7 +33,11 @@ router.register(r'api/users', UserViewSet)
 router.register(r'api/accounts', AccountViewSet, basename='accounts')
 router.register(r'api/tweets', TweetViewSet, basename='tweets')
 router.register(r'api/friendships', FriendshipViewSet, basename='friendships')
+<<<<<<< Updated upstream
 router.register(r'api/newsfeeds', NewsFeedViewSet, basename='newsfeeds')
+=======
+router.register(r'api/friendships', FriendshipViewSet, basename='friendships')
+>>>>>>> Stashed changes
 
 
 
