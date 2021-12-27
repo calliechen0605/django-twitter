@@ -20,6 +20,10 @@ class UserSerializerForFriendship(UserSerializerForTweet):
 class UserSerializerForNewsFeed(UserSerializerForTweet):
     pass
 
+class UserSerializerForComment(UserSerializerForTweet):
+    pass
+
+
 
 #serializer - 两个作用
 #渲染用户object to json

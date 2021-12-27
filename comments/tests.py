@@ -1,4 +1,5 @@
-from django.test import TestCase
+from testing.testcases import TestCase
+
 
 class CommentModelTests(TestCase):
 

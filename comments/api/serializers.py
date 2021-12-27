@@ -1,4 +1,4 @@
-from accounts.api.serializers import UserSerializer
+from accounts.api.serializers import UserSerializerForComment
 from comments.models import Comment
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -6,7 +6,7 @@ from tweets.models import Tweet
 
 #view一般尽量用generic，避免用model， 但是serializer用model好的
 class CommentSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializerForComment()
 
     class Meta:
         model = Comment
