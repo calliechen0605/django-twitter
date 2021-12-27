@@ -40,7 +40,9 @@ class CommentApiTests(TestCase):
             'content': '1' * 141,
         })
         self.assertEqual(response.status_code, 400)
-        self.assertEqual('content' in response.data['errors'], True)
+        #print(response.data)
+       # print('content' in response.data['errors'])
+        self.assertEqual('content' in response.data['error'], True)
 
         # tweet_id 和 content 都带才行
         response = self.linghu_client.post(COMMENT_URL, {
