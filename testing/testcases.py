@@ -1,12 +1,9 @@
 from django.test import TestCase as DjangoTestCase
 from django.contrib.auth.models import User
 from tweets.models import Tweet
-<<<<<<< Updated upstream
 from rest_framework.test import APIClient
-
-=======
 from comments.models import Comment
->>>>>>> Stashed changes
+
 
 class TestCase(DjangoTestCase):
 
