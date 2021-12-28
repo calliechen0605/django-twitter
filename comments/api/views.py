@@ -5,7 +5,9 @@ from comments.models import Comment
 from comments.api.serializers import (
     CommentSerializer,
     CommentSerializerForCreate,
+    CommentSerializerForUpdate,
 )
+from comments.api.permissions import IsObjectOwner
 
 #尽量用generic views
 class CommentViewSet(viewsets.GenericViewSet):
@@ -24,10 +26,13 @@ class CommentViewSet(viewsets.GenericViewSet):
     # PUT /api/comments/1/   ->   update
 
     #检测action 判断permission
+    #这个好fancy啊
     def get_permissions(self):
         if self.action == 'create':
             # 要用 IsAuthenticated() instantiate,
             return [IsAuthenticated()]
+        if self.action in ['update', 'destroy']:
+            return [IsAuthenticated(), IsObjectOwner()] #按顺序检测
         return [AllowAny()]
     #self.get_object()就会找上面的queryset
 
@@ -49,3 +54,33 @@ class CommentViewSet(viewsets.GenericViewSet):
             CommentSerializer(comment).data,
             status=status.HTTP_201_CREATED,
         )
+
+    #update一定要传instance
+    def update(self, request, *args, **kwargs):
+        #get_object 是 DRF的包装函数， 找不到会raise 404
+        # no need to do extra check
+        comment = self.get_object()
+        serializer = CommentSerializerForUpdate(
+            instance = comment,
+            data = request.data,
+        )
+        if not serializer.is_valid():
+            raise Response({
+                'message' : 'Please check input',
+            }, status = status.HTTP_400_BAD_REQUEST)
+        #save 会触发serializer里的update
+        #save 根据 instance 有没有被传进来决定是 create 还是 update
+        comment = serializer.save()
+        return Response(
+            CommentSerializer(comment).data,
+            status = status.HTTP_200_OK,
+        )
+
+    #delete
+    def destroy(self, request, *args, **kwargs):
+        comment = self.get_object()
+        comment.delete()
+        #DRF default return is 204 no content
+        # here we returned 200
+        return Response({'success': True}, status = status.HTTP_200_OK)
+

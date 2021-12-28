@@ -40,3 +40,15 @@ class CommentSerializerForCreate(serializers.ModelSerializer):
             content  = validated_data['content'],
         )
 
+
+#update is different from create, because users are not allow to update tweet_id or user_id
+class CommentSerializerForUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('content', )
+
+        def update(self, instance, validated_data):
+            instance.content = validated_data['content']
+            instance.save()
+            #update requires to return updated instance
+            return instance
