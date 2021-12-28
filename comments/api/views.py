@@ -16,6 +16,7 @@ class CommentViewSet(viewsets.GenericViewSet):
     """
     serializer_class = CommentSerializerForCreate  # 在django 界面渲染
     queryset = Comment.objects.all()
+    filterset_fields = ('tweet_id', )
 
     # 默认6个方法
     # POST /api/comments/  ->  create
@@ -35,6 +36,25 @@ class CommentViewSet(viewsets.GenericViewSet):
             return [IsAuthenticated(), IsObjectOwner()] #按顺序检测
         return [AllowAny()]
     #self.get_object()就会找上面的queryset
+
+    def list(self, request, *args, **kwargs):
+        if 'tweet_id' not in request.query_params:
+            return Response(
+                {
+                    'message' : 'missing tweet_id in the request',
+                    'success' : False,
+                },
+                status = status.HTTP_400_BAD_REQUEST,
+            )
+        #get 到默认的query set
+        queryset = self.get_queryset()
+        comments = self.filter_queryset(queryset).order_by('created_at')
+        serializer = CommentSerializer(comments, many = True)
+        return Response(
+            {
+                'comments' : serializer.data,
+            }, status = status.HTTP_200_OK,
+        )
 
     def create(self, request, *args, **kwargs):
         data = {
