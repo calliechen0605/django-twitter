@@ -148,3 +148,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+# checkout https://www.neilwithdata.com/django-sql-logging
+
+#relative location
+try:
+    from .local_settings import *
+except:
+    pass
