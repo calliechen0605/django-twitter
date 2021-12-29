@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import  User
 from  utils.time_helpers import utc_now
+from likes.models import Like
+from django.contrib.contenttypes.models import ContentType
 
 
 class Tweet(models.Model):
@@ -28,6 +30,13 @@ class Tweet(models.Model):
         #datetime.now不带时区信息， utc有
         #datetime.now() - self.created_at)
         return (utc_now() - self.created_at).seconds // 3600
+
+    @property
+    def like_set(self):
+        return Like.objects.filter(
+            content_type = ContentType.objects.get_for_model(Tweet),
+            object_id = self.id,
+        ).order_by('-created_at')
 
     #java里的to_string
     def __str__(self):

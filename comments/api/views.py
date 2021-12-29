@@ -8,6 +8,7 @@ from comments.api.serializers import (
     CommentSerializerForUpdate,
 )
 from comments.api.permissions import IsObjectOwner
+from utils.decorators import required_params
 
 #尽量用generic views
 class CommentViewSet(viewsets.GenericViewSet):
@@ -36,16 +37,23 @@ class CommentViewSet(viewsets.GenericViewSet):
             return [IsAuthenticated(), IsObjectOwner()] #按顺序检测
         return [AllowAny()]
     #self.get_object()就会找上面的queryset
-
+    '''
+        #user_id在不在query parameter 里
+    @required_params(params = ['user_id'])
     def list(self, request, *args, **kwargs):
+        #GET request.query_params
+        #POST request.data
+
         if 'tweet_id' not in request.query_params:
             return Response(
-                {
-                    'message' : 'missing tweet_id in the request',
-                    'success' : False,
-                },
-                status = status.HTTP_400_BAD_REQUEST,
-            )
+        {
+            'message' : 'missing tweet_id in the request',
+            'success' : False,
+        },
+        status = status.HTTP_400_BAD_REQUEST,
+    ) #optimized by decorator
+
+
         #get 到默认的query set
         queryset = self.get_queryset()
         comments = self.filter_queryset(queryset)\
@@ -56,6 +64,23 @@ class CommentViewSet(viewsets.GenericViewSet):
             {
                 'comments' : serializer.data,
             }, status = status.HTTP_200_OK,
+        )
+    
+    
+    
+    
+    '''
+
+
+
+    @required_params(params=['tweet_id'])
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        comments = self.filter_queryset(queryset).order_by('created_at')
+        serializer = CommentSerializer(comments, many=True)
+        return Response(
+            {'comments': serializer.data},
+            status=status.HTTP_200_OK,
         )
 
     def create(self, request, *args, **kwargs):
