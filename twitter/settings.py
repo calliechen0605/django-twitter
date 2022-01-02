@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'debug_toolbar',
     'django_filters',
+    'notifications',
 
     #project apps
     #startapp 创建的都要加进去

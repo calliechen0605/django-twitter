@@ -14,6 +14,7 @@ class NotificationServiceTests(TestCase):
         # do not dispatch notification if tweet user == comment user
         comment = self.create_comment(self.linghu, self.linghu_tweet)
         NotificationService.send_comment_notification(comment)
+        print('notification object {}'.format(Notification.objects.count()))
         self.assertEqual(Notification.objects.count(), 0)
 
         # dispatch notification if tweet user != comment user
