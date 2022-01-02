@@ -1,6 +1,6 @@
-from testing.testcases import TestCase
-from rest_framework.test import APIClient
 from django.contrib.auth.models import User
+from rest_framework.test import APIClient
+from testing.testcases import TestCase
 
 #记得打 /, 不然会有301 status code
 LOGIN_URL = '/api/accounts/login/'
