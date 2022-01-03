@@ -1,4 +1,11 @@
-from accounts.api.serializers import UserSerializer
+from accounts.api.serializers import (
+    LoginSerializer,
+    SignupSerializer,
+    UserProfileSerializerForUpdate,
+    UserSerializer,
+    UserSerializerWithProfile,
+)
+from accounts.models import UserProfile
 from django.contrib.auth.models import User
 from rest_framework import permissions
 from rest_framework import viewsets
@@ -10,6 +17,7 @@ from django.contrib.auth import (
     logout as django_logout,
 )
 from accounts.api.serializers import SignupSerializer, LoginSerializer
+from utils.permissions import IsObjectOwner
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -17,8 +25,8 @@ class UserViewSet(viewsets.ModelViewSet):
     modelviewset --> default的配置有llist, retrieve, put, patch, destroy
     """
     queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserSerializerWithProfile
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class AccountViewSet(viewsets.ViewSet):
@@ -62,7 +70,6 @@ class AccountViewSet(viewsets.ViewSet):
         #if user doesnt exist
         #queryset.query打印结果可以看
 
-
         # user for login (after authentication)
         user = django_authenticate(username=username, password=password)
         if not user or user.is_anonymous:
@@ -73,7 +80,7 @@ class AccountViewSet(viewsets.ViewSet):
         django_login(request, user)
         return Response({
             "success": True,
-            "user": UserSerializer(user).data,
+            "user": UserSerializerWithProfile(user).data,
         })
 
     @action(methods=['POST'], detail=False)
@@ -90,8 +97,19 @@ class AccountViewSet(viewsets.ViewSet):
         #create new instance
         user = serializer.save()
         django_login(request, user)
+
         return Response({
             'success': True,
-            'user': UserSerializer(user).data,
+            'user': UserSerializerWithProfile(user).data,
         }, status = 201)
+
+
+class UserProfileViewSet(
+    viewsets.GenericViewSet,
+    viewsets.mixins.UpdateModelMixin,
+):
+    queryset = UserProfile
+    permission_classes = (permissions.IsAuthenticated, IsObjectOwner)
+    serializer_class = UserProfileSerializerForUpdate
+
 

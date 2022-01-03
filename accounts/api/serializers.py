@@ -1,31 +1,46 @@
+from accounts.models import UserProfile
 from django.contrib.auth.models import User
 from rest_framework import serializers, exceptions
-
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email')
+        fields = ('id', 'username')
 
 
-class UserSerializerForTweet(serializers.ModelSerializer):
+class UserSerializerWithProfile(UserSerializer):
+    # user.profile.name获取
+    nickname = serializers.CharField(source='profile.nickname')
+    #通过get加上这个column
+    avatar_url = serializers.SerializerMethodField()
+
+    def get_avatar_url(self, obj):
+        if obj.profile.avatar:
+            return obj.profile.avatar.url
+        return None
+
     class Meta:
         model = User
-        fields = ('id','username')
+        fields = ('id','username','nickname', 'avatar_url','email')
 
-class UserSerializerForLike(UserSerializerForTweet):
+
+class UserSerializerForTweet(UserSerializerWithProfile):
     pass
 
 
-class UserSerializerForFriendship(UserSerializerForTweet):
+class UserSerializerForLike(UserSerializerWithProfile):
     pass
 
 
-class UserSerializerForNewsFeed(UserSerializerForTweet):
+class UserSerializerForFriendship(UserSerializerWithProfile):
     pass
 
 
-class UserSerializerForComment(UserSerializerForTweet):
+class UserSerializerForNewsFeed(UserSerializerWithProfile):
+    pass
+
+
+class UserSerializerForComment(UserSerializerWithProfile):
     pass
 
 
@@ -79,5 +94,12 @@ class SignupSerializer(serializers.ModelSerializer):
             email=email,
             password=password,
         )
+        #create user profile
+        user.profile
         return user
 
+
+class UserProfileSerializerForUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('nickname', 'avatar')

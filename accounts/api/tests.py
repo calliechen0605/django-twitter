@@ -1,4 +1,5 @@
-from django.contrib.auth.models import User
+from accounts.models import UserProfile
+from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APIClient
 from testing.testcases import TestCase
 
@@ -7,6 +8,8 @@ LOGIN_URL = '/api/accounts/login/'
 LOGOUT_URL = '/api/accounts/logout/'
 SIGNUP_URL = '/api/accounts/signup/'
 LOGIN_STATUS_URL = '/api/accounts/login_status/'
+USER_PROFILE_DETAIL_URL = '/api/profiles/{}/'
+
 
 #继承了TestCase, 找所有的以test开头的method; test_
 class AccountApiTests(TestCase):
@@ -119,7 +122,66 @@ class AccountApiTests(TestCase):
         # 成功注册
         response = self.client.post(SIGNUP_URL, data)
         self.assertEqual(response.status_code, 201)
+        #print('what does it look like {}'.format(response.data['user']))
         self.assertEqual(response.data['user']['username'], 'someone')
+
+        #验证user profile被create了
+
+        created_user_id = response.data['user']['id']
+        profile = UserProfile.objects.filter(user_id = created_user_id).first()
+        self.assertNotEqual(profile, None)
+
         # 验证用户已经登入
         response = self.client.get(LOGIN_STATUS_URL)
         self.assertEqual(response.data['has_logged_in'], True)
+
+
+class UserProfileAPITests(TestCase):
+
+    def test_update(self):
+        linghu, linghu_client = self.create_user_and_client('linghu')
+        p = linghu.profile
+        p.nickname = 'old nickname'
+        p.save()
+        url = USER_PROFILE_DETAIL_URL.format(p.id)
+
+        #anonymous user
+        response = self.anonymous_client.put(url, {
+            'nickname': 'a new nickname',
+        })
+        self.assertEqual(response.status_code, 403)
+        print('lets print response anonymous: {}'.format(response.data['detail']))
+
+
+        # test can only be updated by user himself.
+        _, dongxie_client = self.create_user_and_client('dongxie')
+        response = dongxie_client.put(url, {
+            'nickname': 'a new nickname',
+        })
+        #
+        self.assertEqual(response.status_code, 403)
+        print('lets print response : {}'.format(response.data['detail']))
+        p.refresh_from_db()
+        self.assertEqual(p.nickname, 'old nickname')
+
+        # update nickname
+        response = linghu_client.put(url, {
+            'nickname': 'a new nickname',
+        })
+        self.assertEqual(response.status_code, 200)
+        p.refresh_from_db()
+        self.assertEqual(p.nickname, 'a new nickname')
+
+        # update avatar
+        response = linghu_client.put(url, {
+            'avatar': SimpleUploadedFile(
+                name='my-avatar.jpg',
+                #字节vs. 字符串? encode?
+                content=str.encode('a fake image'),
+                content_type='image/jpeg',
+            ),
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual('my-avatar' in response.data['avatar'], True)
+        p.refresh_from_db()
+        self.assertIsNotNone(p.avatar)
