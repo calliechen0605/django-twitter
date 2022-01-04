@@ -9,3 +9,5 @@ TWEET_PHOTO_STATUS_CHOICES = (
     (TweetPhotoStatus.PENDING, 'Approved'),
     (TweetPhotoStatus.PENDING, 'Rejected'),
 )
+
+TWEET_PHOTO_UPLOAD_LIMIT = 9
