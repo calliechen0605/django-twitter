@@ -13,6 +13,7 @@ class NotificationViewSet(
 ):
     serializer_class = NotificationSerializer
     permission_classes = (IsAuthenticated,)
+    filterset_fields = ('unread',)
 
     def get_queryset(self):
         return Notification.objects.filter(recipient=self.request.user)

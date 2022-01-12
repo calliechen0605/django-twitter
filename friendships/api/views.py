@@ -42,7 +42,8 @@ class FriendshipViewSet(viewsets.GenericViewSet):
         #website就是登录的人要follow 的id
         # /api/friendships/<pk>/follow/
         #get if user with id = pk exists
-        self.get_object()
+        #self.get_object()
+
 
         serializer = FriendshipSerializerForCreate(data = {
             'from_user_id' : request.user.id,
@@ -67,7 +68,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
         #pk是string
         if request.user.id == unfollow_user.id:
             return Response({
-                'success' : 'False',
+                'success' : False,
                 'message' : 'You cannot unfollow yourself',
             }, status=status.HTTP_400_BAD_REQUEST)
 

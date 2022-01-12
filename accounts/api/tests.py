@@ -150,7 +150,7 @@ class UserProfileAPITests(TestCase):
             'nickname': 'a new nickname',
         })
         self.assertEqual(response.status_code, 403)
-        print('lets print response anonymous: {}'.format(response.data['detail']))
+        #print('lets print response anonymous: {}'.format(response.data['detail']))
 
 
         # test can only be updated by user himself.
@@ -160,7 +160,7 @@ class UserProfileAPITests(TestCase):
         })
         #
         self.assertEqual(response.status_code, 403)
-        print('lets print response : {}'.format(response.data['detail']))
+        #print('lets print response : {}'.format(response.data['detail']))
         p.refresh_from_db()
         self.assertEqual(p.nickname, 'old nickname')
 
