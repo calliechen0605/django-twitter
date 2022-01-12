@@ -1,6 +1,6 @@
 from notifications.models import Notification
 from testing.testcases import TestCase
-'''
+
 COMMENT_URL = '/api/comments/'
 LIKE_URL = '/api/likes/'
 NOTIFICATION_URL = '/api/notifications/'
@@ -111,5 +111,4 @@ class NotificationApiTests(TestCase):
         response = self.linghu_client.get(NOTIFICATION_URL, {'unread': True})
         self.assertEqual(response.data['count'], 1)
         response = self.linghu_client.get(NOTIFICATION_URL, {'unread': False})
-        self.assertEqual(response.data['count'], 1)    
-'''
+        self.assertEqual(response.data['count'], 1)
