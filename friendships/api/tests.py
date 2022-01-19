@@ -197,7 +197,6 @@ class FriendshipApiTests(TestCase):
             has_followed = (result['user']['id'] % 2 == 0)
             self.assertEqual(result['has_followed'], has_followed)
 
-
     def test_followings_pagination(self):
         #test regular pagination logic
         max_page_size = FriendshipPagination.max_page_size
@@ -217,9 +216,12 @@ class FriendshipApiTests(TestCase):
 
         #dongxie test has_followed
         response = self.dongxie_client.get(url,{'page' : 1})
+        print(url)
+        print("response is".format(response.data))
         for result in response.data['results']:
             has_followed = (result['user']['id'] % 2 == 0)
             self.assertEqual(result['has_followed'], has_followed)
+
 
 
 
