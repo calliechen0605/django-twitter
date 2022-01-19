@@ -13,14 +13,13 @@ FOLLOWINGS_URL = '/api/friendships/{}/followings/'
 class FriendshipApiTests(TestCase):
 
     def setUp(self):
-        #self.anonymous_client = APIClient()
 
+        self.clear_cache()
         self.linghu = self.create_user('linghu', 'linghu@gmail.com')
         self.linghu_client = APIClient()
         self.linghu_client.force_authenticate(self.linghu)
 
         self.dongxie = self.create_user('dongxie', 'dongxie@gmail.com')
-        #self.dongxie = self.create_user('dongxie')#, 'dongxie@gmail.com')
         self.dongxie_client = APIClient()
         self.dongxie_client.force_authenticate(self.dongxie)
 
@@ -216,8 +215,8 @@ class FriendshipApiTests(TestCase):
 
         #dongxie test has_followed
         response = self.dongxie_client.get(url,{'page' : 1})
-        print(url)
-        print("response is".format(response.data))
+        #print(url)
+        #print("response is".format(response.data))
         for result in response.data['results']:
             has_followed = (result['user']['id'] % 2 == 0)
             self.assertEqual(result['has_followed'], has_followed)
