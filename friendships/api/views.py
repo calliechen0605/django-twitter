@@ -11,6 +11,7 @@ from friendships.api.serializers import (
     FollowerSerializer,
     FriendshipSerializerForCreate,
 )
+from friendships.services import FriendshipService
 from django.contrib.auth.models import User
 
 
@@ -61,6 +62,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
                 'errors' : serializer.errors,
             }, status=status.HTTP_400_BAD_REQUEST)
         instance = serializer.save()
+        FriendshipService.invalidate_following_cache(request.user.id)
         return Response(
             FollowingSerializer(instance, context={'request': request}).data,
             status=status.HTTP_201_CREATED,
@@ -85,6 +87,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
             from_user=request.user,
             to_user=unfollow_user,
         ).delete()
+        FriendshipService.invalidate_following_cache(request.user.id)
         return Response({'success' : True, 'deleted' : deleted})
 
     #MySQL
