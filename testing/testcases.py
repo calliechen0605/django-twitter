@@ -1,6 +1,7 @@
 from comments.models import Comment
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import caches
 from django.test import TestCase as DjangoTestCase
 from likes.models import Like
 from newsfeeds.models import NewsFeed
@@ -55,4 +56,7 @@ class TestCase(DjangoTestCase):
 
     def create_newsfeed(self, user, tweet):
         return NewsFeed.objects.create(user = user, tweet = tweet)
+
+    def clear_cache(self):
+        caches['testing'].clear()
 
