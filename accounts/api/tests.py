@@ -16,6 +16,7 @@ class AccountApiTests(TestCase):
 
     def setUp(self):
         # 这个函数会在每个 test function 执行的时候被执行
+        self.clear_cache()
         self.client = APIClient()
         self.user = self.create_user(
             username='admin',
@@ -27,7 +28,6 @@ class AccountApiTests(TestCase):
     #一个单元测试
     def test_login(self):
         # 每个测试函数必须以 test_ 开头，才会被自动调用进行测试
-
         # 测试必须用 post 而不是 get
         #get不允许， 所以返回405
         response = self.client.get(LOGIN_URL, {

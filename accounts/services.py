@@ -6,7 +6,6 @@ from twitter.cache import USER_PATTERN, USER_PROFILE_PATTERN
 
 cache = caches['testing'] if settings.TESTING else caches['default']
 
-
 class UserService(object):
 
     @classmethod
@@ -16,7 +15,7 @@ class UserService(object):
         if user is not None:
             return user
         #not in cache then search in DB
-        return User.objects.filter(id=user_id)
+        return User.objects.filter(id=user_id).first()
 
     @classmethod
     def invalidate_user(cls, user_id):

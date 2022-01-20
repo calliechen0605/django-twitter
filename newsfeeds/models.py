@@ -1,6 +1,7 @@
 
-from django.db import models
+from accounts.services import UserService
 from django.contrib.auth.models import User
+from django.db import models
 from tweets.models import Tweet
 
 
@@ -18,3 +19,7 @@ class NewsFeed(models.Model):
 
     def __str__(self):
         return f'{self.created_at} inbox of {self.user}: {self.tweet}'
+
+    @property
+    def cached_user(self):
+        return UserService.get_user_through_cache(self.user_id)
