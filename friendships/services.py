@@ -1,6 +1,9 @@
+from django.conf import settings
+from django.core.cache import caches
 from friendships.models import Friendship
-from django.core.cache import cache
 from twitter.cache import FOLLOWINGS_PATTERN
+
+cache = caches['testing'] if settings.TESTING else caches['default']
 
 
 class FriendshipService(object):
