@@ -12,6 +12,7 @@ FOLLOW_URL = '/api/friendships/{}/follow/'
 class NewsFeedApiTests(TestCase):
 
     def setUp(self):
+        self.clear_cache()
         self.linghu = self.create_user('linghu', "linghu@hi.com")
         self.linghu_client = APIClient()
         self.linghu_client.force_authenticate(self.linghu)
