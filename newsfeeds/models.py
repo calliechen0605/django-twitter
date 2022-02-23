@@ -1,8 +1,7 @@
-
-from accounts.services import UserService
 from django.contrib.auth.models import User
 from django.db import models
 from tweets.models import Tweet
+from utils.memcached_helper import MemcachedHelper
 
 
 class NewsFeed(models.Model):
@@ -21,5 +20,5 @@ class NewsFeed(models.Model):
         return f'{self.created_at} inbox of {self.user}: {self.tweet}'
 
     @property
-    def cached_user(self):
-        return UserService.get_user_through_cache(self.user_id)
+    def cached_tweet(self):
+        return MemcachedHelper.get_object_through_cache(Tweet, self.tweet_id)

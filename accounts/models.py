@@ -1,7 +1,8 @@
-from accounts.listeners import user_changed, user_profile_changed
+from accounts.listeners import user_profile_changed
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save, pre_delete
+from utils.listeners import invalidate_object_cache
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null = True)
@@ -27,8 +28,8 @@ def get_profile(user):
 # 给 User Model 增加了一个 profile 的 property 方法用于快捷访问
 User.profile = property(get_profile)
 
-pre_delete.connect(user_changed, sender=User)
-post_save.connect(user_changed, sender=User)
+pre_delete.connect(invalidate_object_cache, sender=User)
+post_save.connect(invalidate_object_cache, sender=User)
 
 pre_delete.connect(user_profile_changed, sender=UserProfile)
 post_save.connect(user_profile_changed, sender=UserProfile)
