@@ -1,4 +1,5 @@
 from dateutil import parser
+from django.conf import settings
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -41,15 +42,6 @@ class EndlessPagination(PageNumberPagination):
 
     # 分好页的queryset
     def paginate_queryset(self, queryset, request, view=None):
-        if type(queryset) == list:
-            return self.paginate_ordered_list(queryset, request)
-        '''
-                page_size = self.get_page_size(request)
-        if not page_size:
-            return None
-        '''
-
-
         if 'created_at__gt' in request.query_params:
             created_at__gt = request.query_params['created_at__gt']
             queryset = queryset.filter(created_at__gt=created_at__gt)
@@ -63,6 +55,21 @@ class EndlessPagination(PageNumberPagination):
         queryset = queryset.order_by('-created_at')[:self.page_size + 1]
         self.has_next_page = (len(queryset) > self.page_size)
         return queryset[:self.page_size]
+
+    # this is when input is a cached_list
+    def paginate_cached_list(self, cached_list, request):
+        paginated_list = self.paginate_ordered_list(cached_list, request)
+        # if scrolling up, paginated_list will contain all new data, return
+        if 'created_at__gt' in request.query_params:
+            return paginated_list
+        # if has next page, cached list is not done yet, return
+        if self.has_next_page:
+            return paginated_list
+        # if cached list length is shorter than overall limit, cached list is exhaustive
+        if len(cached_list) < settings.REDIS_LIST_LENGTH_LIMIT:
+            return paginated_list
+        # there are data in db but not cache, so need to query in db
+        return None
 
     def get_paginated_response(self, data):
         return Response({
