@@ -25,6 +25,9 @@ class Tweet(models.Model):
     #每次修改都会更新时间
     #updated_at = models.DateTimeField(auto_now=True)
 
+    likes_count = models.IntegerField(default=0, null=True)
+    comments_count = models.IntegerField(default=0, null=True)
+
     class Meta:
         index_together = (('user', 'created_at'),)
         #-created_at, negative sign, ascending 
